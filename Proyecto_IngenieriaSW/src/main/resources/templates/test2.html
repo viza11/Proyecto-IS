@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="/estilos/style2.css"/>
+    <link rel="stylesheet" href="/estilos/style.css"/>
+    <link rel="shorcut icon" href="/images/favicon.ico">
+    <title>Registrarse</title>
+  </head>
+  <body>
+    <!DOCTYPE html>
+<html lang="en">
+
+<header>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700">
+    <title>Bootstrap Simple Registration Form</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</header>
+
+    <div class="signup-form text-center">
+        <form th:action="@{/productos/ingresoProductos}" method="post" oninput='up2.setCustomValidity(up2.value != contrasenia.value ? "Las contraseñas no coinciden" : "")' enctype="multipart/form-data" style="height: 590px;">
+            <div class="text-center">
+                <img id="imagen" class="rounded" src="/images/logo-group.svg">
+            </div>
+            <h2 class="text-warning" style="color:#E9B200 ;">Producto</h2>
+            <p class="hint-text">Ingresa los datos de tu producto </p>
+            <div  class="form-group">
+                <div class="row">
+                    <div class="col-6">
+                        <input type="text" class="form-control btn-secondary bg-light text-secondary" id="nombre" name="nombre" placeholder="Nombre" required="required">
+                    </div>
+                    <div class="col-6">
+                        <input type="number" class="form-control btn-secondary bg-light text-secondary" id="precio" name="precio" placeholder="Precio" required="required">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <div class="row">
+                    <div class="col-6">
+                        <input type="text" class="form-control btn-secondary bg-light text-secondary" id="descripcion" name="descripcion" placeholder="Descripcion" required="required">
+                    </div>
+                    <div class="col-6">
+                        <input type="date" class="form-control btn-secondary bg-light text-secondary" id="fechaIngreso" name="fechaIngreso" placeholder="Fecha" required="required">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="mb-3">
+                    <input class="form-control" type="file"  name="file" id="fotografias">
+                  </div>
+            </div>
+            <div class="form-group text-secondary">
+                  <select class="form-select form-control btn-secondary bg-light text-secondary " id="idCategoria" name="idCategoria"  required >
+					
+                     <option value=" "  selected disabled hidden >Categoria</option>
+                     	<option th:each="tmpCategoria:${categoria}" th:value="${tmpCategoria.idCategoria}" th:text="${tmpCategoria.nombre}">Electrónica</option>
+                       
+                 </select>
+                <div class="invalid-feedback">
+                  Por favor seleccione una departamento.
+                </div>
+              </div>
+              
+            <div class="form-group text-secondary">
+                <select class="form-select form-control btn-secondary bg-light text-secondary " id="idEstadoProducto" name="idEstadoProducto"  required>
+
+                   <option value=" "  selected disabled hidden>Estado del Producto</option>
+                   <option value="1">Nuevo</option>
+                   <option value="2">Semi-Nuevo</option>
+                   <option value="3">Usado</option>
+               </select>
+              <div class="invalid-feedback">
+                Por favor seleccione un estado.
+              </div>
+            </div>  
+            <div class="form-group">
+                <button type="submit" class="btn bg-warning btn-lg btn-block" style="background-color:#E9B200">Registrar Producto</button>
+            </div>
+        </form>
+        
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="controlador.js"></script>
+</body>
+</html>

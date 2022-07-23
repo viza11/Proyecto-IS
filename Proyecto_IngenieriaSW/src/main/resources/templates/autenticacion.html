@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="shorcut icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/estilos/estiloInicio.css">
+    <script src="https://kit.fontawesome.com/e6ebadea27.js" crossorigin="anonymous"></script>
+    <title>Barra de Usuario</title>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar navbar-expand-lg">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="inicio.html">
+                    <img src="/images/logo-group.svg" alt="" width="100" height="74">
+                </a>
+                <select class="form-select btn-secondary bg-light text-secondary ml-5 mr-5" id="idDepartamento" name="idDepartamento" style="width:100px; border-width: 0px; border-radius: 5px;" required>
+
+                    <option value=" "  selected disabled hidden>Ubicación</option>
+                    <option value="1">Yoro</option>
+                    <option value="2">Choluteca</option>
+                    <option value="3">Colón</option>
+                    <option value="4">Comayagua</option>
+                    <option value="5">Copán</option>
+                    <option value="6">Cortés</option>
+                    <option value="7">El Paraíso</option>
+                    <option value="8">Francisco Morazán</option>
+                    <option value="9">Gracias a Dios</option>
+                    <option value="10">Intibucá</option>
+                    <option value="11">Islas de la Bahía</option>
+                    <option value="12">La Paz</option>
+                    <option value="13">Lempira</option>
+                    <option value="14">Ocotepeque</option>
+                    <option value="15">Olancho</option>
+                    <option value="16">Santa Bárbara</option>
+                    <option value="17">Valle</option>
+                    <option value="18">Atlántida</option>
+                    
+                    
+                </select>
+                <form class="d-flex ml-xl-5" role="search">
+                    <input class="form-control me-2 w-100" type="search" placeholder="" aria-label="Search">
+                    <select class="form-select btn-secondary bg-light text-secondary w-50" id="categoria" name="categoria" style="border-width: 0px; border-radius:5px;" required>
+
+                        <option value=" "  selected disabled hidden>Categoría</option>
+                        <option value="electrónica">Electrónica</option>
+                        <option value="futuros padres">Futuros padres</option>
+                        <option value="hogar">Hogar</option>
+                        <option value="inmuebles">Inmuebles</option>
+                        <option value="juguetes">Juguetes</option>
+                        <option value="libros">Libros</option>
+                        <option value="mascotas">Mascotas</option>
+                        <option value="moda">Moda</option>
+                        <option value="vehículos">Vehículos</option>
+                        <option value="video juegos">Videojuegos</option>
+                        
+                    </select>
+                    <button class="btn btn-light" type="submit"><img src="/images/lupa.png" alt=""></button>
+                </form>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent" style="align-items:flex-end">
+                    <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <button class="btn btn-light" type="submit" style="margin-top: 10px;"><a href="/productos/crearProductos" id="enlace" style="margin-left:0; text-decoration: none;">Vender</a></button>
+                    </li>
+                    <li class="nav-item">
+                        <button class="btn btn-light" type="submit" style="margin-top: 10px;"><a href="/categorias/seleccionarCategorias" id="enlace" style="margin-left:0; text-decoration: none;">Inscribirse a Categorias</a></button>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="index" id="enlace"><img src="/images/usuario.svg" alt="" width="50" height="20">Heber</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link ml-auto" href="#" id="enlace"><img src="/images/carrito.svg" alt="" width="60" height="40"></a>
+                    </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div style="margin-top: 50px;">
+        <a href="/busqueda" id="enlace">Recientes</a>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-sm-6 col-md-4 col-xl-3 col-lg-3 mt-4 ml-5"  th:each="tmpProducto:${producto}">
+                    <a href="#" id="enlace">
+                        <div class="card">
+                            <img th:src= "@{'/imgt/' + ${tmpProducto.fotografias}}" class="card-img-top" alt="..." width="150px" height="150px">
+                            <div class="card-body" style="padding-bottom: 1px;">
+                                <h5 class="card-title" th:text="${tmpProducto.nombre}"><span>Vendedor<span></h5>
+                                <p class="card-text" th:text="'LPS. '+${tmpProducto.precio}"></p>
+                                <p class="card-text" th:text="'Fecha: '+${tmpProducto.fechaIngreso}"></p>
+                               
+                            </div>
+                             
+                        </div>
+                    </a>
+                    			<form th:action="@{/agregar/listaDeseo}" method="post" id="loginForm"  oninput='up2.setCustomValidity(up2.value != contrasenia.value ? "Las contraseñas no coinciden" : "")' >      
+            				<div class="form-group" style="    height: 0px!important;">
+              				  <input type="text" th:value="${tmpProducto.idProducto}" id="idProducto" name="idProducto" style="visibility: hidden;">
+           					 </div>
+           				 <div class="form-group">
+               			 <button type="submit" class="btn bg-warning btn-lg btn-block" style="background-color:#E9B200">Añadir a la lista de Deseos</button>
+           			 </div>
+       			 </form>
+                    
+                </div> 
+            </div>
+        </div>
+
+    </div>
+    
+	<nav class="mt-5" th:fragment="paginador" aria-label="Page navigation example">
+        <ul class="pagination ">
+          <li class="page-item" th:each="item:${page.paginas}" th:class="${item.actual? 'page-item active':'page-item'}">
+          	<span class="page-link" th:if="${item.actual}" th:text="${item.numero}"> </span>
+          	<a class="page-link" th:if="${not item.actual}" th:href="@{${page.url}(page=${item.numero-1})}") th:text="${item.numero}">
+          </li>
+          
+        </ul>
+      </nav>
+      
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+</html>

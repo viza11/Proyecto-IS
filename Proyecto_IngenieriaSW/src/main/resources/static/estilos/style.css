@@ -1,0 +1,111 @@
+input:focus{
+    outline-width: 0;
+}
+#departamento{
+    outline-width: 0;
+}
+
+#logo {
+
+    display: block;
+    text-align: center;
+    
+}
+
+body {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+}
+
+#imagen {
+    width: 150px;
+    height: 70px;
+}
+
+#formulario {
+    background-position: center center;
+    border-radius: 5px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 5px 5px;
+    width: 350px;
+    height: 450px;
+    padding: 30px 60px;
+    padding-bottom: 10px;
+    margin: auto;
+}
+
+#formulario-signin {
+    background-position: center center;
+    border-radius: 5px;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 5px 5px;
+    width: 350px;
+    height: 750px;
+    padding: 30px 60px;
+    padding-bottom: 10px;
+    margin: auto;
+    margin-bottom: 40px;
+}
+
+#formulario h1 {
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.control {
+
+    width: 100%;
+    padding: 15px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border: 1px solid;
+
+}
+
+.control-divide {
+    width: 47%;
+    padding: 15px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    font-size: 1rem;
+    border-radius: 10px;
+    border:1px solid;
+}
+
+.boton {
+    background-color: rgba(255, 195, 0, 1);
+    color: black;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.boton:hover {
+    background-color: rgb(233, 178, 0, 1);
+}
+
+#enlace{
+    text-decoration: none;
+}
+
+#enlace:hover {
+    text-decoration: underline;
+}
+
+.input-error {
+    border: 1px solid red;
+}
+
+.input-success {
+    border: 1px solid green;
+}
+
+.correccion{
+	display: flex!important;
+	flex-direction: column!important;
+}
+
+.contenedor1{
+	flex:1
+}
+
