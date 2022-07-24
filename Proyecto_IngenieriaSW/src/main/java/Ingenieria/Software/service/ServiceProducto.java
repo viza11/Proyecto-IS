@@ -39,5 +39,15 @@ public class ServiceProducto {
 		return this.repositoryProducto.findAll(pegeable);
 	}
 	
+	public List<Producto> FiltrarDepartamento (int idDepartamento) {
+		return this.repositoryProducto.findByIdDepartamento(idDepartamento);
+	}
 	
+	public List<Producto> FiltrarNombreDepartamento (String nombre) {
+		return this.repositoryProducto.findByNombreDepartamento(nombre);
+	}
+	
+	public List<Producto> FiltrarCategoria (String nombre) {
+		return this.repositoryProducto.findByCategoria(nombre);
+	}
 }
