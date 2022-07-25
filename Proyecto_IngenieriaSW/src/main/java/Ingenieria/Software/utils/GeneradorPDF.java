@@ -2,6 +2,9 @@ package Ingenieria.Software.utils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -19,7 +22,6 @@ import com.itextpdf.text.log.LoggerFactory;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-
 import Ingenieria.Software.model.Producto;
 
 public class GeneradorPDF {
@@ -28,7 +30,8 @@ public class GeneradorPDF {
 	
 	
 	
-	public static ByteArrayInputStream customerPDFReport(List<Producto> customers) {
+	public static ByteArrayInputStream customerPDFReport(List<Producto> customers) throws IOException {
+		
 	Document document = new Document();
 	ByteArrayOutputStream out = new ByteArrayOutputStream();
 	
@@ -37,7 +40,7 @@ public class GeneradorPDF {
 		PdfWriter.getInstance(document,out);
 		document.open();
 		Font font = FontFactory.getFont(FontFactory.COURIER, 18, BaseColor.BLACK);
-		Paragraph para = new Paragraph("Productos de su sugeridos",font);
+		Paragraph para = new Paragraph("Productos sugeridos",font);
 		para.setAlignment(Element.ALIGN_CENTER);
 		document.add(para);
 		document.add(Chunk.NEWLINE);
@@ -85,10 +88,22 @@ public class GeneradorPDF {
 			}
 		document.add(table);
 	document.close();
+	
 	}catch(DocumentException e) {
 		logger.error(e.toString());
 		
 	}
+	try {
+		FileOutputStream fos = new FileOutputStream ("C:\\Users\\Victor\\Documents\\GitHub\\PROYECTO-ISS\\Proyecto_IngenieriaSW\\src\\main\\resources\\static\\pdf\\10.pdf", true);
+		
+		fos.write(out.toByteArray());
+        fos.close();
+		
+	} catch (FileNotFoundException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+	
 	return new ByteArrayInputStream (out.toByteArray());
 	}
 	

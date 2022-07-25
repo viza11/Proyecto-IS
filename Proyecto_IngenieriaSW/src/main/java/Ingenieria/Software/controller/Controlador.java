@@ -1,5 +1,6 @@
 package Ingenieria.Software.controller;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,18 +8,27 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -39,12 +49,23 @@ import Ingenieria.Software.model.Producto;
 import Ingenieria.Software.model.Usuario;
 import Ingenieria.Software.repository.RepositoryAnuncio;
 import Ingenieria.Software.repository.RepositoryProducto;
+import Ingenieria.Software.service.EmailSenderService;
+import Ingenieria.Software.service.MailService;
 import Ingenieria.Software.service.ServiceAnuncio;
 import Ingenieria.Software.service.ServiceCategoria;
 import Ingenieria.Software.service.ServiceDepartamento;
 import Ingenieria.Software.service.ServiceProducto;
 import Ingenieria.Software.service.ServiceUsuario;
+import Ingenieria.Software.utils.GeneradorPDF;
 import Ingenieria.Software.utils.RenderizadorPaginas;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
+@Component
 
 @Controller
 public class Controlador {
@@ -66,9 +87,97 @@ public class Controlador {
 	
 	RepositoryProducto repositoryProducto;
 	
+	@Autowired
+    private MailService mailService;
+	
+	@Autowired
+	private EmailSenderService service;
+	
 	//============================================================================================
 	//Seguridad
 	//============================================================================================
+	@GetMapping(value="/PdfProducto",produces = MediaType.APPLICATION_PDF_VALUE)
+	public ResponseEntity<InputStreamResource> customersReport() throws IOException, MessagingException {
+		
+		 List<Producto> costumers = this.serviceProducto.obtenerTodosProductos();
+		 List<Usuario> usuarios = this.serviceUsuario.obtenerTodosUsuarios();
+		 List<Producto> productosCategoria = this.serviceProducto.obtenerTodosProductos();
+		 List<Categoria> Categorias = this.serviceCategoria.obtenerTodasCategoria();
+		 List<Producto> ListaVacia = new ArrayList<Producto>();
+		 ArrayList<String> arreglo1 = new ArrayList<String>();
+		 ArrayList<Integer> arreglo2 = new ArrayList<Integer>();
+		 String empty_str = "";
+		 Path directorioImagenes=Paths.get("src//main//resources//static/pdf");
+		 String rutaAbsoluta = directorioImagenes.toFile().getAbsolutePath();
+		 Path rutaCompleta = Paths.get(rutaAbsoluta+"//");
+		
+		 /* 
+		 Path directorioImagenes=Paths.get("src//main//resources//static/pdf");
+			String rutaAbsoluta = directorioImagenes.toFile().getAbsolutePath();
+			try {
+				
+				byte[] bystesImg = fotografias.getBytes();
+				Path rutaCompleta = Paths.get(rutaAbsoluta+"//"+fotografias.getOriginalFilename());
+				Files.write(rutaCompleta, bystesImg);
+				System.out.println(rutaCompleta.getFileName());
+			}catch(IOException e) {
+				e.printStackTrace();
+			}
+
+			service.sendEmailWithAttachment(mail,
+					body,
+					subject,
+					"src//main//resources//static/pdf//"+fotografias.getOriginalFilename());
+		 
+		 */
+		 
+		 for(Categoria c : Categorias) {
+				 arreglo1.add(c.getNombre()); }
+		 
+		 
+		 for(Categoria c : Categorias) {
+			 arreglo2.add(c.getIdCategoria());}
+	 
+		 
+		 for(Usuario u : usuarios) {
+	    
+			 empty_str = u.getSuscripcion();
+		        String[] split = empty_str.split(",");
+		        for (int i=0; i<split.length; i++)
+		            System.out.println(split[i]);
+		            
+		        System.out.println("Done");
+		     
+		   	 for(Producto p : productosCategoria) {
+		   		 
+				 if(p.getIdCategoria()==Integer.parseInt(u.getSuscripcion()))
+					 
+					 ListaVacia.add(p);
+		   	 }
+		   	
+		   	
+		   	GeneradorPDF.customerPDFReport(ListaVacia);
+		   	
+		   	
+		 }
+		 triggerMail2("hebermeza0@gmail.com");
+		 
+		 
+			
+		 
+		 
+		  ByteArrayInputStream bis = GeneradorPDF.customerPDFReport(ListaVacia);
+		  HttpHeaders headers = new HttpHeaders();
+		  headers.add("Content-Disposition", "inline: filename-Cliente.pdf");
+		  
+		  return ResponseEntity 
+				  .ok()
+				  .headers(headers)
+				  .contentType(MediaType.APPLICATION_PDF)
+				  .body(new InputStreamResource(bis));
+	}
+	
+	
 	@Autowired
 	PasswordEncoder passwordEncoder;
 	@RequestMapping(value="/encriptar"  ,method=RequestMethod.GET)
@@ -449,4 +558,124 @@ public class Controlador {
   }
 
 
+//CORREO
+@GetMapping("/mail")
+public String index(){
+    return "send_mail_view";
 }
+/*
+@PostMapping("/sendMail")
+public String sendMail(@RequestParam("name") String name, @RequestParam("mail") String mail, @RequestParam("subject") String subject, @RequestParam("body") String body){
+
+    String message = body +"\n\n Datos de contacto: " + "\nNombre: " + name + "\nE-mail: " + mail;
+    mailService.sendMail("testspringcorrreo@gmail.com", mail, subject, message);
+    
+    return "send_mail_view";
+}*/
+
+@PostMapping("/sendMail")
+public String triggerMail(Authentication auth,@RequestParam("name") String name, 
+		@RequestParam("mail") String mail, 
+		@RequestParam("subject") String subject,
+		@RequestParam(name = "file") MultipartFile fotografias,
+		@RequestParam("body") String body) throws MessagingException {
+	Path directorioImagenes=Paths.get("src//main//resources//static/pdf");
+	String rutaAbsoluta = directorioImagenes.toFile().getAbsolutePath();
+	try {
+		
+		byte[] bystesImg = fotografias.getBytes();
+		Path rutaCompleta = Paths.get(rutaAbsoluta+"//"+fotografias.getOriginalFilename());
+		Files.write(rutaCompleta, bystesImg);
+		System.out.println(rutaCompleta.getFileName());
+	}catch(IOException e) {
+		e.printStackTrace();
+	}
+
+	service.sendEmailWithAttachment(mail,
+			body,
+			subject,
+			"src//main//resources//static/pdf//"+fotografias.getOriginalFilename());
+	return "send_mail_view";
+
+}
+
+public void triggerMail2(String mail) throws MessagingException {
+	
+
+	service.sendEmailWithAttachment("hebermeza0@gmail.com",
+			"test",
+			"test",
+			"src//main//resources//static/pdf//10.pdf");
+	System.out.println("entro");
+}
+
+
+public static byte[] toByteArray(InputStream in) throws IOException
+{
+    ByteArrayOutputStream os = new ByteArrayOutputStream();
+
+    byte[] buffer = new byte[1024];
+    int len;
+
+    // lee los bytes del flujo de entrada y los almacena en el búfer
+    while ((len = in.read(buffer)) != -1)
+    {
+        // escribir bytes del búfer en el flujo de salida
+        os.write(buffer, 0, len);
+    }
+
+    return os.toByteArray();
+}
+
+public static void main(String[] args) throws IOException
+{
+    // flujo de entrada
+    InputStream in = new ByteArrayInputStream("Techie Delight"
+                                    .getBytes(StandardCharsets.UTF_8));
+
+    // array de bytes
+    byte[] bytes = toByteArray(in);
+    System.out.println(new String(bytes));
+}
+
+//Tareas Autoprogramadas
+
+@Scheduled(cron = "0 * * ? * *")
+public void scheduleTaskUsingCronExpression() throws MessagingException, IOException {
+	
+	
+	List<Usuario> usuarios = this.serviceUsuario.obtenerTodosUsuarios();
+    List<Producto> productosCategoria = this.serviceProducto.obtenerTodosProductos();
+    List<Producto> ListaVacia = new ArrayList<Producto>();
+    
+	
+    
+    for(Usuario u : usuarios) {
+
+
+          for(Producto p : productosCategoria) {
+             String empty_str = ""; 
+             empty_str = u.getSuscripcion();
+             String[] split = empty_str.split(",");
+             for (int i=0; i<split.length; i++) {
+                 if(p.getIdCategoria()==Integer.parseInt(split[i]))
+
+                     ListaVacia.add(p);
+                   System.out.println("Done");
+             }
+
+          }
+
+          GeneradorPDF.customerPDFReport(ListaVacia);
+          service.sendEmailWithAttachment(u.getCorreoElectronico(),
+                  "test",
+                  "test",
+                  "src//main//resources//static/pdf//10.pdf");
+          System.out.println("entro");
+
+          ListaVacia.clear();
+   }
+}
+}
+
+

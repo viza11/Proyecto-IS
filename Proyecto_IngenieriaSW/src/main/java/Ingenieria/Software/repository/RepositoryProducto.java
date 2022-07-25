@@ -9,7 +9,5 @@ import Ingenieria.Software.model.Producto;
 public interface RepositoryProducto extends JpaRepository<Producto, Integer>{
 	public Producto findById(int idProducto);
 	public Producto deleteById(int idProducto);
-	public List<Producto> findByIdDepartamento(int idDepartamento);
-	public List<Producto> findByNombreDepartamento(String idDepartamento);
-	
+
 }

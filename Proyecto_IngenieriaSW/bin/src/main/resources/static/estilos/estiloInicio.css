@@ -12,3 +12,13 @@ header {
     text-decoration: underline;
 }
 
+.page-link{
+    color:black;
+}
+.page-link:hover{
+    color:black;
+}
+.page-link:focus{
+    color: black;
+    background-color:  rgba(255, 195, 0, 1);
+}

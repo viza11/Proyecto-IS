@@ -61,19 +61,11 @@
                   </div>
             </div>
             <div class="form-group text-secondary">
-                  <select class="form-select form-control btn-secondary bg-light text-secondary " id="idCategoria" name="idCategoria"  required>
-
-                     <option value=" "  selected disabled hidden>Categoria</option>
-                     	<option value="1">Electrónica</option>
-                        <option value="2">Futuros padres</option>
-                        <option value="3">Hogar</option>
-                        <option value="4">Inmuebles</option>
-                        <option value="5">Juguetes</option>
-                        <option value="6">Libros</option>
-                        <option value="7">Mascotas</option>
-                        <option value="8">Moda</option>
-                        <option value="9">Vehículos</option>
-                        <option value="10">Videojuegos</option>
+                  <select class="form-select form-control btn-secondary bg-light text-secondary " id="idCategoria" name="idCategoria"  required >
+					
+                     <option value=" "  selected disabled hidden >Categoria</option>
+                     	<option th:each="tmpCategoria:${categoria}" th:value="${tmpCategoria.idCategoria}" th:text="${tmpCategoria.nombre}">Electrónica</option>
+                       
                  </select>
                 <div class="invalid-feedback">
                   Por favor seleccione una departamento.

@@ -35,6 +35,7 @@ public class ControllerProucto {
 
 	public ResponseEntity<InputStreamResource> customersReport() throws IOException {
 		 List<Producto> costumers = this.serviceProducto.obtenerTodosProductos();
+		 
 		
 		 
 		  ByteArrayInputStream bis = GeneradorPDF.customerPDFReport(costumers);
