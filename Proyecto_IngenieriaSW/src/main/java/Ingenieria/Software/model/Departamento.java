@@ -40,6 +40,12 @@ public class Departamento {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+
+
+	public int getIdDepartamento() {
+		return idDepartamento;
+	}
+
 	
 	
 	

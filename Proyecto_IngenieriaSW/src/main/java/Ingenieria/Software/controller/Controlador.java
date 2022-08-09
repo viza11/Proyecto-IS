@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import javax.mail.MessagingException;
@@ -62,6 +63,7 @@ import Ingenieria.Software.model.msgEmisor;
 import Ingenieria.Software.model.msgReceptor;
 import Ingenieria.Software.repository.RepositoryAnuncio;
 import Ingenieria.Software.repository.RepositoryProducto;
+import Ingenieria.Software.repository.RepositoryDepartamento;
 import Ingenieria.Software.service.EmailSenderService;
 import Ingenieria.Software.service.MailService;
 import Ingenieria.Software.service.ServiceAnuncio;
@@ -287,9 +289,11 @@ public class Controlador {
 	/***************************************************************PRODUCTO**********************************************************************/
 
 	@GetMapping("/productos/crearProductos")
-    public String registrarProductos(Model model){
+    public String registrarProductos(Model model,Model model2){
 		List<Categoria> categoria = this.serviceCategoria.obtenerTodasCategoria();
+		List<Departamento> departamento = this.serviceDepartamento.obtenerTodosLosDepartamentos();
 	    model.addAttribute("categoria", categoria);
+	    model.addAttribute("departamento",departamento);
         return "test2";
     }
 	
@@ -328,7 +332,9 @@ public class Controlador {
                                   @RequestParam(name = "descripcion") String descripcion,
                                   @RequestParam(name = "file") MultipartFile fotografias,
                                   @RequestParam(name = "idCategoria") int idCategoria,
-                                  @RequestParam(name = "idEstadoProducto") int idEstadoProducto){
+                                  @RequestParam(name = "idEstadoProducto") int idEstadoProducto,
+                                  @RequestParam(name = "idDepartamento") int idDepartamento){
+    	
         /*String nombre, int precio, String descripcion, Date fechaIngreso,
             byte[] fotografias, int idCategoria, int idUsuario, String idEstadoProducto*/
     	if(!fotografias.isEmpty()) {
@@ -358,7 +364,7 @@ public class Controlador {
     			
     		}
     		LocalDate fechaIngreso = LocalDate.now();
-            Producto producto= new Producto(nombre,precio,descripcion,fechaIngreso,fotografias.getOriginalFilename(),idCategoria,idUsuario,idEstadoProducto);
+            Producto producto= new Producto(nombre,precio,descripcion,fechaIngreso,fotografias.getOriginalFilename(),idCategoria,idUsuario,idEstadoProducto,idDepartamento);
             this.serviceProducto.crearProducto(producto);
             return "redirect:/pagina/paginaPrincipal";
         }catch(Exception e) {
@@ -1004,6 +1010,7 @@ public String restablecerContraseña(@RequestParam("clave") String clave){
 		 return "productosUsuario.html";
 	}
 	 
+	 
 	 @PostMapping(value ="/productos/eliminarProducto")
 	    public String borrarProductos(@RequestParam(name = "idProducto") int idProducto) {
 		 this.serviceProducto.eliminarProducto(idProducto);
@@ -1026,7 +1033,8 @@ public String restablecerContraseña(@RequestParam("clave") String clave){
 	 
 	 
 	 @GetMapping("/chat/{id}")
-	    public String detallesMensajes(Model model,Model model2,Model model3,Model model4, @PathVariable("id") int id,Authentication auth) {
+	    public String detallesMensajes(Model model,Model model2,Model model3,Model model4,
+	    		@PathVariable("id") int id,Authentication auth) {
 		 	List<Usuario> usuarios=this.serviceUsuario.obtenerTodosUsuarios();
 		 	List<Chat> chats=this.serviceChat.obtenerTodosLosChats();
 		 	List<msgEmisor> msgsEmisor = new ArrayList<msgEmisor>();
@@ -1183,51 +1191,95 @@ public String restablecerContraseña(@RequestParam("clave") String clave){
 	 ///chat/3
 
 
-@GetMapping(value="/productos/ProductosFiltrados")
-public String productosFiltrados(Model model){
- List<Producto> productos=this.serviceProducto.obtenerTodosProductos();
-	
-		
- 
-  
-	model.addAttribute("producto",productos);
- return "productosFiltrados.html";
-}
+	 @GetMapping(value="/productos/ProductosFiltrados")
+		public String productosFiltrados(Model model,Model model2,Model model3,@RequestParam(name = "nombre")Optional<String> nombre,
+		 		@RequestParam(name = "idCategoria") Optional<String> idCategoria, Object String){ 
+		  		 List<Producto> productos=this.serviceProducto.obtenerTodosProductos();
+		  		 List<Categoria> categorias = this.serviceCategoria.obtenerTodasCategoria();
+		  		 List<Departamento> departamento = this.serviceDepartamento.obtenerTodosLosDepartamentos(); 
+		  		 /*
+		 List<Producto> productosFiltrados = new ArrayList<Producto>();
+	     List<Departamento> departamentos = this.serviceDepartamento.obtenerTodosLosDepartamentos();
+	     List<Categoria> categorias = this.serviceCategoria.obtenerTodasCategoria();
+	     
 
-
-@PostMapping(value ="/productos/ProductosFiltradosCategorias")
-public String productosFiltradosC(Model model,Authentication auth,@RequestParam(name = "nombre") String nombre){
-	
-	 List<Producto> productos=this.serviceProducto.obtenerTodosProductos();
-	 List<Categoria> categorias = this.serviceCategoria.obtenerTodasCategoria();
-	 List<Producto> productosFiltrados = new ArrayList<Producto>();
-
-	         for(Categoria c: categorias) {
-	        	 if(c.getNombre().equals(nombre)) {
-					for(Producto p:productos) {
-						if(p.getIdUsuario()==c.getIdCategoria()) {
-							productosFiltrados.add(p);
-						}
+			for (Producto p: productos) {
+		       if(p.getIdDepartamento()==idDepartamento);		
+		    	   productosFiltrados.add(p);	
+				
+				}
+			
+			for (Producto pro: productos) {
+				if(pro.getIdCategoria()==idCategoria) {
+					productos.add(pro);
+					
+				}
+				
+				for(Producto precios: productos) {
+					if(precios.getPrecio()<precio) {
+						productosFiltrados.add(precios);
 					}
-	        	 }
-	         }
-	return "redirect:/productos/ProductosFiltrados";
-}
-
-@PostMapping(value ="/productos/ProductosFiltradosCategorias")
-public String productosFiltradosPrecio(Model model,Authentication auth,@RequestParam(name = "precio") int precio){
-	
-	 List<Producto> productos=this.serviceProducto.obtenerTodosProductos();
-	 List<Producto> productosFiltrados = new ArrayList<Producto>();
-
-					for(Producto p:productos) {
-						if(p.getPrecio()<precio) {
-							productosFiltrados.add(p);
 						}
-					}
-	        	 
-	         
-	return "redirect:/productos/ProductosFiltrados";
-}
+			}
+		*/
+		  		model.addAttribute("productosFiltrados",productos);
+		 		model.addAttribute("categoria",categorias);
+		  		model.addAttribute("departamento",departamento);
+			return "ProductosFiltrados.html";
+		}
 
-}
+	
+
+	 @PostMapping(value ="/productos/ProductosFiltradoCategorias")
+
+	 public String productosFiltradosPrecio(Model model,Model model2,Model model3,@RequestParam(name = "nombre")Optional<String> nombre,
+	 		@RequestParam(name = "idCategoria") Optional<String> idCategoria, Object String
+	 		){
+	 	 List<Producto> productosTotales=this.serviceProducto.obtenerTodosProductos();
+	 	 List<Departamento> departamentos = this.serviceDepartamento.obtenerTodosLosDepartamentos();
+		 List<Categoria> categorias = this.serviceCategoria.obtenerTodasCategoria();
+		 List<Departamento> departamento = this.serviceDepartamento.obtenerTodosLosDepartamentos(); 
+	 	 List<Producto> productosFiltrados = new ArrayList<Producto>();
+
+	
+	 	 if(nombre!=null) {
+				for(Departamento d:departamentos) {
+					if(d.getNombre().equals(nombre)) 
+						for(Producto p:productosTotales)
+						 if(p.getIdDepartamento()==d.getIdDepartamento())
+							 productosFiltrados.add(p);	
+					
+				}
+				
+ }
+	 	 
+	 	if(idCategoria!=null) 
+	 	{
+	 		for(Categoria c:categorias)
+	 			if(c.getNombre().equals(idCategoria))
+ 			for(Producto p:productosTotales) {
+                  if(c.getIdCategoria()==p.getIdCategoria())
+ 					productosFiltrados.add(p);			
+ 		
+ 		}
+	 	}
+ 			/*	
+ 			if(precio!=0) {
+ 				for (Producto p: productosTotales) {
+ 					if(p.getPrecio()<precio)
+ 						productosFiltrados.add(p);
+ 						
+ 				}
+ 			}
+ 			*/
+	 	  
+	 		model.addAttribute("productosFiltrados",productosFiltrados);
+	 		model.addAttribute("categoria",categorias);
+	  		model.addAttribute("departamento",departamento);
+	 	return "ProductosFiltrados.html";
+	 }
+
+
+				}
+			
+

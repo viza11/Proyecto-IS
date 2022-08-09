@@ -36,6 +36,8 @@ public class Producto implements Serializable {
 
 	private int idEstadoProducto;
 	
+	private int idDepartamento;
+	
 	
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -48,6 +50,11 @@ public class Producto implements Serializable {
 	@JsonBackReference
 	private EstadoProducto estadoProducto;
 	
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "idDepartamento", referencedColumnName = "idDepartamento", insertable = false, updatable = false)
+	@JsonBackReference
+	private Departamento departamento;
+	
 	
 	
 	
@@ -58,7 +65,7 @@ public class Producto implements Serializable {
 	
 	
 	public Producto(String nombre, int precio, String descripcion, LocalDate fechaIngreso,
-			String fotografias, int idCategoria, int idUsuario, int idEstadoProducto) {
+			String fotografias, int idCategoria, int idUsuario, int idEstadoProducto,int idDepartamento) {
 		super();
 		this.nombre = nombre;
 		this.precio = precio;
@@ -68,6 +75,7 @@ public class Producto implements Serializable {
 		this.idCategoria = idCategoria;
 		this.idUsuario = idUsuario;
 		this.idEstadoProducto = idEstadoProducto;
+		this.idDepartamento = idDepartamento;
 	}
 
 	public int getIdProducto() {
@@ -139,6 +147,20 @@ public class Producto implements Serializable {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
+	
+	
+	public int getIdDepartamento() {
+		return idDepartamento;
+	}
+
+
+	public void setIdDepartamento(int idDepartamento) {
+		this.idDepartamento = idDepartamento;
+	}
+
+
+
+
 	private static final long serialVersionUID = 1L;
 	
 	

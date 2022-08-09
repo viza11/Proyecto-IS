@@ -39,16 +39,45 @@
     </header>
     <a class="ml-xl-5 mt-xl-5" href="/pagina/paginaPrincipal"><img src="/images/regresar.png"
             style="width: 47px; height:47px; margin-top: 30px !important; margin-right: 35px; float: right;" alt=""></a>
-    <div style="margin-top: 50px;">
+    <form style="margin-top: 50px;">
     	<div style="width: 100%;margin-left: 40%;margin-right: 40%;">
     	<a href="/busqueda" id="enlace">Productos filtrados por categoria:)</a>
     	</div>
- 
-                
+    	
+    </form>
+    <div  style="display:flex;margin-left:300px;">
+        <form th:action="@{/productos/ProductosFiltradoCategorias}" method="post">
+        <div style="width:200px;" class="form-group text-secondary">
+    
+                  <select class="form-select form-control btn-secondary bg-light text-secondary " id="idCategoria" name="idCategoria"  required >
+					
+                     <option value=" "  selected disabled hidden >Categoria</option>
+                     	<option th:each="tmpCategoria:${categoria}" th:value="${tmpCategoria.nombre}" th:text="${tmpCategoria.nombre}">Electrónica</option>
+                       
+                 </select>
+       </div>
+       
+       <div style="width:200px;margin-left:15px;margin-right:15px" class="form-group text-secondary">
+                  <select class="form-select form-control btn-secondary bg-light text-secondary " id="nombre" name="nombre"  required >
+					
+                     <option value=" "  selected disabled hidden >Ubicacion</option>
+                     	<option th:each="tmpDepartamento:${departamento}" th:value="${tmpDepartamento.nombre}" th:text="${tmpDepartamento.nombre}">Atlántida</option>
+                        </select>
+            </div>  
+            
+            
+             <div style="margin-left:15px;" class="form-group">
+             
+                <button type="submit" class="btn bg-warning btn-lg btn-block" style="background-color:#E9B200">Buscar</button>
+              </div>
+        </form>
+             </div>
+           
+             
         <div class="container">
             <div class="row" style="justify-content: center;">
-                <div class="col-12 col-sm-4 col-md-3 col-xl-3 col-lg-3	 mt-4 ml-4"  th:each="tmpProducto:${producto}">
-                <form th:action="@{/productos/ProductosFiltrados}" method="post">
+                <div class="col-12 col-sm-4 col-md-3 col-xl-3 col-lg-3	 mt-4 ml-4"  th:each="tmpProducto:${productosFiltrados}">
+                <form th:action="@{/productos/ProductosFiltradoCategorias}" method="post">
                  <a id="enlace" th:href="@{/detalle/{id}(id=${tmpProducto.idProducto})}">
                         <div class="card">
                             <img th:src= "@{'/imgt/' + ${tmpProducto.fotografias}}" class="card-img-top" alt="..." width="150px" height="150px">
