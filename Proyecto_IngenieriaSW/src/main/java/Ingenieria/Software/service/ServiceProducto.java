@@ -1,5 +1,6 @@
 package Ingenieria.Software.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -26,6 +27,8 @@ public class ServiceProducto {
 	public Producto buscarProducto(int idProducto) {
 		return this.repositoryProducto.findById(idProducto);
 	}
+	
+
 	
 	public void eliminarProducto(int idProducto) {
 		this.repositoryProducto.deleteById(idProducto);

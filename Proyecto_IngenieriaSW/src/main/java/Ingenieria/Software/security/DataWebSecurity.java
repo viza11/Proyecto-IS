@@ -48,6 +48,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 	.antMatchers("/PdfProducto/**").permitAll()
 	.antMatchers("/mail/**").permitAll()
 	.antMatchers("/sendMail/**").permitAll()
+	.antMatchers("/").permitAll()
+	.antMatchers("/detalle/").hasAnyAuthority("usuario")
+    .antMatchers("/denuncia/").hasAnyAuthority("usuario")
+    .antMatchers("/calificar/**").hasAnyAuthority("usuario")
 	
 	// Las vistas públicas no requieren autenticación
 	.antMatchers("/encriptar/**").permitAll()

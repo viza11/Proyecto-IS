@@ -94,7 +94,7 @@ public class GeneradorPDF {
 		
 	}
 	try {
-		FileOutputStream fos = new FileOutputStream ("C:\\Users\\Victor\\Documents\\GitHub\\PROYECTO-ISS\\Proyecto_IngenieriaSW\\src\\main\\resources\\static\\pdf\\10.pdf", true);
+		FileOutputStream fos = new FileOutputStream ("D:\\OneDrive\\Documentos\\GitHub\\PROYECTO-ISS\\Proyecto_IngenieriaSW\\src\\main\\resources\\static\\pdf\\10.pdf", true);
 		
 		fos.write(out.toByteArray());
         fos.close();

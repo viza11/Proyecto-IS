@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>InnoChat</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="/estilos/styleChat.css">
+        <link rel="shorcut icon" href="/images/favicon.ico">
+        <script src="https://kit.fontawesome.com/fd384f8db8.js" crossorigin="anonymous"></script>
+        <script src="https://kit.fontawesome.com/061bf78a2b.js" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+    <body>
+        <div id="container">
+            <aside id="sideBar">
+                <div id="barraDeFerramentas">
+                    <img src="/images/avatar1.png" class="fotoUsuario" alt="Imagem do avatar 1">
+                    <div class='auxIcon'>
+                    	<span sec:authentication="name">Username</span>
+                        <i class="fas fa-spinner" style="visibility: hidden;"></i>
+                        <i class="fas fa-comment-alt" style="visibility: hidden;"></i>
+     
+                    </div>
+                </div>
+               
+                
+                <div id="containerContatos">
+                    <div class="boxContato chatAtivo mt-2 border-bottom" th:each="tmpUsuarios:${usuarios}" >
+                    <a th:href="@{/chat/{id}(id=${tmpUsuarios.idUsuario})}">
+                    <img src="/images/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <div class="ifoUsuario">
+                            <p class="nomeUsuario" th:text="${tmpUsuarios.primerNombre}+' ' +${tmpUsuarios.primerApellido}" style="padding-bottom: 13px;">Joana Farias</p>
+                        </div>
+                        <div class="infoMenssage">
+                            <p class="horario">22:40</p>
+                        </div>
+                        </a>
+                    </div>
+                    
+  
+                </div>
+            </aside>
+            <main id="chatArea">
+                <nav id="chatNavBar">
+                    <div id="containerContactInfo">
+                    <!--
+                        <img src="/images/avatar2.png" alt="Imagem do avatar 2" class="fotoUsuario">
+                        <p class="nomeUsuario"></p>
+                        -->
+                    </div>
+                    
+                </nav>
+                <div id="containerMenssages">
+                    <div class="bg-image"></div>
+                    <div class="chatMenssages">
+                    <div th:each=" producto,iterador : ${emisorMsg}">
+                    
+                    <div class="izq"  >
+                            <p class="remetenteMenssage" th:text="${receptorMsg[iterador?.index]?.msg}">Todo bien?</p>
+                        </div>
+                        <div class="der">
+                            <p class="destinMenssage" th:text="${emisorMsg[iterador?.index]?.msg}">Aquí intentandolo</p>
+                        </div>
+                        
+                    </div>
+                        
+                        <!--
+                        <div class="izq">
+                            <p class="remetenteMenssage">Todo bien?</p>
+                        </div>
+                        <div class="izq">
+                            <p class="remetenteMenssage">Todo bien?</p>
+                        </div>
+                        <div class="der">
+                            <p class="destinMenssage">Aquí intentandolo</p>
+                        </div>
+                        <div class="der">
+                            <p class="destinMenssage">Aquí intentandolo ebhdsnjcnnfaweufsdncjsdncwe.
+                                dwejnfueinfuawniawen
+                            </p>
+                        </div>
+                        <div class="izq">
+                            <p class="remetenteMenssage">njwebfbfeabbfaebb</p>
+                        </div>-->
+                    </div>
+                </div>
+                <div class="containerEnviarMenssage">
+                    
+                    <form th:action="@{/chat/mensajes}" method="post" th:each="tmpidReceptor:${idReceptorM}">
+                    <input type="number" name="idReceptor" id="idReceptor" th:value="${tmpidReceptor.idReceptor}" style="visibility: hidden;">
+                    <input type="text" name="msg" id="msg" placeholder="Escriba un mensaje">
+                    <button type="submit" onclick="locationreload()" class="foco" style="float: right; margin-right: 25px; border: none;"><i class="fa-solid fa-paper-plane" style="float:right;"></i></button>
+                    </form>
+					
+                </div>
+            </main>
+        </div>
+        
+        <script>
+            function locationreload() {
+                location.reload();}
+        </script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    </body>
+</html>

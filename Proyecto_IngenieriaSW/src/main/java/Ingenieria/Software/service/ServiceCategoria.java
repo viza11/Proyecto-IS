@@ -32,11 +32,7 @@ public class ServiceCategoria {
 		
 	}
 	
-	public void actualizarCategoria(Categoria categoria,int idCategoria) {
-		this.repositoryCategoria.save(categoria);
-		
-	}
-	
+
 	public List<Categoria> obtenerTodasCategoria(){
 		return this.repositoryCategoria.findAll();
 	}

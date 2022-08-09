@@ -8,11 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 public class ControllerError implements ErrorController {
 	
-	@GetMapping(value="/error")
-	public String CustomError(){
-		return "error";
-		
-	}
+	
 	
 
 	public String getErrorPath() {

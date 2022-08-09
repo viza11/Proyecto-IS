@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="shorcut icon" href="/images/favicon.ico">
     <link rel="stylesheet" href="/estilos/estiloInicio.css">
     <script src="https://kit.fontawesome.com/e6ebadea27.js" crossorigin="anonymous"></script>
@@ -66,18 +66,19 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent" style="align-items:flex-end">
                     <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <button class="btn btn-light" type="submit" style="margin-top: 10px;"><a href="/productos/crearProductos" id="enlace" style="margin-left:0; text-decoration: none;">Vender</a></button>
+                    <li class="nav-item" style="margin-right: 10px;">
+                        <button class="btn btn-light" type="submit" style="margin-top: 10px;"><a href="/productos/crearProductos" id="enlace" style="margin-left:0; text-decoration: none; ">Vender</a></button>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" style="margin-right: 10px;">
                         <button class="btn btn-light" type="submit" style="margin-top: 10px;"><a href="/categorias/seleccionarCategorias" id="enlace" style="margin-left:0; text-decoration: none;">Inscribirse a Categorias</a></button>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="index" id="enlace"><img src="/images/usuario.svg" alt="" width="50" height="20">Heber</a>
+                        <button class="btn btn-light" type="submit" style="margin-top: 10px;"><a href="/productos/tusProductos" id="enlace" style="margin-left:0; text-decoration: none;">Eliminar Anuncios</a></button>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link ml-auto" href="#" id="enlace"><img src="/images/carrito.svg" alt="" width="60" height="40"></a>
+                        <a class="nav-link active" aria-current="page" href="index" id="enlace"><img src="/images/usuario.svg"  alt="" width="60" height="30">Bienvenido, <span sec:authentication="name">Username</span></a>
                     </li>
+                    
                     </ul>
                 </div>
             </div>
@@ -87,9 +88,9 @@
         <a href="/busqueda" id="enlace">Recientes</a>
 
         <div class="container">
-            <div class="row">
-                <div class="col-12 col-sm-6 col-md-4 col-xl-3 col-lg-3 mt-4 ml-5"  th:each="tmpProducto:${producto}">
-                    <a href="#" id="enlace">
+            <div class="row" style="justify-content: center;">
+                <div class="col-12 col-sm-4 col-md-3 col-xl-3 col-lg-3	 mt-4 ml-4"  th:each="tmpProducto:${producto}">
+                     <a id="enlace" th:href="@{/detalle/{id}(id=${tmpProducto.idProducto})}">
                         <div class="card">
                             <img th:src= "@{'/imgt/' + ${tmpProducto.fotografias}}" class="card-img-top" alt="..." width="150px" height="150px">
                             <div class="card-body" style="padding-bottom: 1px;">
@@ -98,34 +99,26 @@
                                 <p class="card-text" th:text="'Fecha: '+${tmpProducto.fechaIngreso}"></p>
                                
                             </div>
-                             
                         </div>
-                    </a>
-                    			<form th:action="@{/agregar/listaDeseo}" method="post" id="loginForm"  oninput='up2.setCustomValidity(up2.value != contrasenia.value ? "Las contraseñas no coinciden" : "")' >      
-            				<div class="form-group" style="    height: 0px!important;">
-              				  <input type="text" th:value="${tmpProducto.idProducto}" id="idProducto" name="idProducto" style="visibility: hidden;">
-           					 </div>
-           				 <div class="form-group">
-               			 <button type="submit" class="btn bg-warning btn-lg btn-block" style="background-color:#E9B200">Añadir a la lista de Deseos</button>
-           			 </div>
-       			 </form>
-                    
+                   </a>
+       			  
                 </div> 
             </div>
         </div>
 
     </div>
-    
-	<nav class="mt-5" th:fragment="paginador" aria-label="Page navigation example">
+    <div style="justify-content: center!important; margin-left: auto; margin-right: auto;    width: 5%;">
+    <nav class="mt-5" th:fragment="paginador"  aria-label="Page navigation example">
         <ul class="pagination ">
-          <li class="page-item" th:each="item:${page.paginas}" th:class="${item.actual? 'page-item active':'page-item'}">
-          	<span class="page-link" th:if="${item.actual}" th:text="${item.numero}"> </span>
-          	<a class="page-link" th:if="${not item.actual}" th:href="@{${page.url}(page=${item.numero-1})}") th:text="${item.numero}">
+          <li class="page-item page-link" th:each="item:${page.paginas}" th:class="${item.actual? 'page-item active':'page-item'}">
+          	<span class="page-link pagina border-warning" style="background-color: rgba(255, 195, 0, 1)!important;  color:black;  border: none!important; " th:if="${item.actual}" th:text="${item.numero}"> </span>
+          	<a class="page-link" th:if="${not item.actual}" th:href="@{${page.url}(page=${item.numero-1})}") th:text="${item.numero}"></a>
           </li>
-          
         </ul>
       </nav>
-      
+    </div>
+	
+  
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>

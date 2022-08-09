@@ -15,11 +15,10 @@
   <header>
     <nav class="navbar navbar-expand-lg">
         <div class="container-fluid">
-            <a class="navbar-brand" href="inicio.html">
-                <img src="/images/logo-group.svg" alt="" width="100" height="74">
+            <a class="navbar-brand" href="inicio">
+                <img src="/images/logo-group.svg" href="/pagina/paginaPrincipal" alt="" width="100" height="74">
             </a>
-            <select class="form-select btn-secondary bg-light text-secondary ml-5 mr-5" id="idDepartamento" name="idDepartamento" style="width:100px; border-width: 0px; border-radius: 5px;" required>
-
+            <select class="form-select btn-secondary bg-light text-secondary ml-5 mr-5" id="idDepartamento" name="idDepartamento" style="width:150px; border-width: 0px; border-radius: 5px;" required>
                 <option value=" "  selected disabled hidden>Ubicación</option>
                 <option value="1">Yoro</option>
                 <option value="2">Choluteca</option>
@@ -38,42 +37,49 @@
                 <option value="15">Olancho</option>
                 <option value="16">Santa Bárbara</option>
                 <option value="17">Valle</option>
-                <option value="18">Atlántida</option>
-                
-                
+                <option value="18">Atlántida</option>  
             </select>
-            <form class="d-flex ml-xl-5" role="search">
-                <input class="form-control me-2 w-100" type="search" placeholder="" aria-label="Search">
-                <select class="form-select btn-secondary bg-light text-secondary w-50" id="categoria" name="categoria" style="border-width: 0px; border-radius:5px;" required>
+            <form class="d-flex" role="search">
+                    <input class="form-control btn-outline-light" id="buscar" type="search" placeholder="Buscar Producto" aria-label="Search">
+                    <select class="form-select btn-secondary bg-light text-secondary btn-outline-light" id="categoria" name="categoria" style="border-width:0px; background-color: white !important; border-right: 1px solid rgb(241, 236, 236);" required>
 
-                    <option value=" "  selected disabled hidden>Categoría</option>
-                    <option value="electrónica">Electrónica</option>
-                    <option value="futuros padres">Futuros padres</option>
-                    <option value="hogar">Hogar</option>
-                    <option value="inmuebles">Inmuebles</option>
-                    <option value="juguetes">Juguetes</option>
-                    <option value="libros">Libros</option>
-                    <option value="mascotas">Mascotas</option>
-                    <option value="moda">Moda</option>
-                    <option value="vehículos">Vehículos</option>
-                    <option value="video juegos">Videojuegos</option>
-                    
-                </select>
-                <button class="btn btn-light" type="submit"><img src="/images/lupa.png" alt=""></button>
-            </form>
+                        <option value=" "selected disabled hidden>Categoría</option>
+                        <option value="electrónica">Electrónica</option>
+                        <option value="futuros padres">Futuros padres</option>
+                        <option value="hogar">Hogar</option>
+                        <option value="inmuebles">Inmuebles</option>
+                        <option value="juguetes">Juguetes</option>
+                        <option value="libros">Libros</option>
+                        <option value="mascotas">Mascotas</option>
+                        <option value="moda">Moda</option>
+                        <option value="vehículos">Vehículos</option>
+                        <option value="video juegos">Videojuegos</option>
+
+                    </select>
+
+                    <button class="btn btn-light btn-outline-light" type="submit"><img src="/images/lupa.png" alt=""></button>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+             </form>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent" style="align-items:flex-end">
                 <ul class="navbar-nav ml-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <button class="btn btn-light" data-toggle="modal" data-target="#exampleModal" type="submit">Vender</button>
+                  
+               
+               <li class="nav-item">
+                        <button class="btn btn-light" type="submit" style="margin-top: 10px;"><a href="/productos/crearProductos" id="enlace" style="margin-left:0; text-decoration: none;">Vender</a></button>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="index.html" id="enlace"><img src="/images/usuario.svg" alt="" width="50" height="20">Heber</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link ml-auto" href="login.html" id="enlace"><img src="/images/carrito.svg" alt="" width="60" height="40"></a>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <img src="/images/usuario.svg"  alt="" width="60" height="30">Bienvenido, <span sec:authentication="name">Username</span></a>
+                  <div class="dropdown-menu " aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="inicio.html">Cerrar Sesión</a>
+                    <a class="dropdown-item" href="listadeseos.html">Lista de deseos</a>
+                    <a class="dropdown-item" href="categoriasSuscritas.html">Categorías suscritas</a>
+                  </div>
                 </li>
                 </ul>
             </div>
@@ -81,17 +87,19 @@
     </nav>
 </header>
 
+<div th:object="${producto}">
+
     <div id="sliderCarousel" class="carousel slide ml-5 mr-xl-5 mt-5 w-25 h-25" data-bs-ride="true" style="float:left;">
       <div>
       <div class="carousel-inner">
         <div class="carousel-item active">
-          <img src="/images/LaptopDELL.jpg" class="d-block w-100" alt="primera imagen">
+          <img th:src= "@{'/imgt/' + *{fotografias}}"  style="height:250px; background-size:cover; background-position: center center;" class="d-block w-110" alt="primera imagen">
         </div>
         <div class="carousel-item">
-          <img src="/images/compu1.jpg" class="d-block w-100" alt="segunda imagen">
+          <img th:src= "@{'/imgt/' + *{fotografias}}"  style="height:250px; background-size:cover; background-position: center center;" class="d-block w-110" alt="segunda imagen">
         </div>
         <div class="carousel-item">
-          <img src="/images/compudell2.jpg" class="d-block w-100" alt="tercera imagen">
+          <img th:src= "@{'/imgt/' + *{fotografias}}"  style="height:250px; background-size:cover; background-position: center center;" class="d-block w-110" alt="tercera imagen">
         </div>
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#sliderCarousel" data-bs-slide="prev">
@@ -104,42 +112,35 @@
       </button>
   </div>
   </div>
-  <div class="price mr-5 my-5" style="float:center ">
-    <p>Laptop Dell</p>
-    <p>Lps10,000</p>
-    <p>Computadora de 15" 8GB de RAM disco duro de 500 GB entradas procesador intel core i7</p>
-    <p>estado: semi nuevo</p>
-    <a href="#" style="text-decoration:none "><p>vendedor: Mario Lopez</p></a>
-    <p>Calificación: 4.3</p>
-</div>
-  
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Ingresar prodcuto</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="container">
-          <div class="div row">
-              <div class="div col-12">
-                   <input class="form-control my-2" type="text" id="nombreproducto" placeholder="Nombre producto">
-                   <input class="form-control my-2" type="text" id="precio" placeholder="precio">
-                   <input class="form-control my-2" type="text" id="descripcion" placeholder="Descripcion">
-                   <input class="form-control my-2" type="file" id="imagen" placeholder="Subir archivo">
-              </div>
+  <div class="price mr-5 my-5" style="float:center !important; box-sizing:border-box;">
+    <p th:text="*{nombre}"><span></span></p>
+    <p th:text="'LPS. ' + *{precio}"><span></span></p>
+    <p th:text="'Sobre este Artículo: ' + *{descripcion}"></p>
+    <p th:text="'Estado del producto: ' + *{idEstadoProducto}"></p>
+    <a href="/vendedor" style="text-decoration:none; color:black " th:text="'Vendendor: ' + *{idUsuario}"><p></p></a>
+    <button id="denunciar"><a id="denuncia" th:href="@{/denuncia/{id}(id=${producto.idUsuario})}">Denunciar</a></button>
+    <form th:action="@{/calificar}" method="post" id="loginForm" oninput='up2.setCustomValidity(up2.value != contrasenia.value ? "Las contraseñas no coinciden" : "")' >      
+         <div class="form-group" style="height: 0px!important;">
+            <input type="text" th:value="*{idUsuario}" id="idUsuario" name="idUsuario" style="visibility: hidden;">
           </div>
-        </div>
+          <div class="form-group flex-container">
+            <input type="number" placeholder="Calificar" id="calificar" name="calificar" min=1 max=5>
+            <button id="botonCalificar" type="submit" class="btn bg-warning btn-lg btn-block">Calificar</button>
+          </div>
+     </form>
+    <p style="margin-right:100px; text-decoration:none;color:black">Categoría: Electronica</p> 
+    <form th:action="@{/agregar/listaDeseo}" method="post" id="loginForm"  oninput='up2.setCustomValidity(up2.value != contrasenia.value ? "Las contraseñas no coinciden" : "")' >      
+      <div class="form-group" style="    height: 0px!important;">
+        <input type="text" th:value="*{idProducto}" id="idProducto" name="idProducto" style="visibility: hidden;">
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-primary">Guardar</button>
+      <div class="form-group">
+      <button type="submit" class="agregar" style="margin-left:820px !important;"><img src="/images/corazon.png" alt="" width="12" height="17"> Agregar a la lista de deseos</button>
       </div>
-    </div>
-  </div>
+    </form>
 </div>
+
+</div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>

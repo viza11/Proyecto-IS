@@ -29,7 +29,7 @@ public class Usuario {
 	private int telefono;
 	private String denuncia;
 	
-
+	private int calificacion;
 	private String direccion;
 	private String rol;
 	private String  suscripcion;
@@ -79,7 +79,7 @@ public class Usuario {
 	}
 	public Usuario( String primerNombre, String segundoNombre, String primerApellido,
 			String segundoApellido, String correoElectronico, String contrasenia, int idDepartamento, int telefono,
-			String direccion,String rol,String listaDeDeseos, boolean activo) {
+			String direccion,String rol,String listaDeDeseos, boolean activo,int calificacion) {
 		super();
 		this.primerNombre = primerNombre;
 		this.segundoNombre = segundoNombre;
@@ -93,6 +93,7 @@ public class Usuario {
 		this.rol=rol;
 		this.listaDeDeseos = listaDeDeseos;
 		this.activo = activo;
+		this.calificacion = calificacion;
 	}
 
 	public void setPrimerNombre(String primerNombre) {
@@ -173,7 +174,14 @@ public class Usuario {
 		this.denuncia = denuncia;
 	}
 
-	
+	public int getCalificacion() {
+		return calificacion;
+	}
+
+	public void setCalificacion(int calificacion) {
+		this.calificacion = calificacion;
+	}
+
 	
 
 }

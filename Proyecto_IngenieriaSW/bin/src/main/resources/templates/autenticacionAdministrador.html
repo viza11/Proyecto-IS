@@ -97,7 +97,7 @@
     background-repeat: no-repeat;
     background-size: cover;">
             <div class="row">
-                <div class="col-12 col-sm-6 col-md-4 col-xl-3 col-lg-3 mt-4 ml-5"  th:each="tmpProducto:${producto}">
+                <div class="col-12 col-sm-6 col-md-4 col-xl-3 col-lg-4 mt-4 ml-5"  th:each="tmpProducto:${producto}">
                     <a href="#" id="enlace">
                         <div class="card">
                             <img th:src= "@{'/imgt/' + ${tmpProducto.fotografias}}" class="card-img-top" alt="..." width="150px" height="150px">

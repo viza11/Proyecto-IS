@@ -7,12 +7,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Random;
 
 import javax.mail.MessagingException;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -44,16 +49,26 @@ import org.springframework.web.multipart.MultipartFile;
 
 import Ingenieria.Software.model.Anuncio;
 import Ingenieria.Software.model.Categoria;
+import Ingenieria.Software.model.Chat;
 import Ingenieria.Software.model.Departamento;
+import Ingenieria.Software.model.Estadistica;
+import Ingenieria.Software.model.Estadistica2;
+import Ingenieria.Software.model.EstadisticaGeneral;
+import Ingenieria.Software.model.EstadoProducto;
 import Ingenieria.Software.model.Producto;
 import Ingenieria.Software.model.Usuario;
+import Ingenieria.Software.model.idAux;
+import Ingenieria.Software.model.msgEmisor;
+import Ingenieria.Software.model.msgReceptor;
 import Ingenieria.Software.repository.RepositoryAnuncio;
 import Ingenieria.Software.repository.RepositoryProducto;
 import Ingenieria.Software.service.EmailSenderService;
 import Ingenieria.Software.service.MailService;
 import Ingenieria.Software.service.ServiceAnuncio;
 import Ingenieria.Software.service.ServiceCategoria;
+import Ingenieria.Software.service.ServiceChat;
 import Ingenieria.Software.service.ServiceDepartamento;
+import Ingenieria.Software.service.ServiceEstadoProducto;
 import Ingenieria.Software.service.ServiceProducto;
 import Ingenieria.Software.service.ServiceUsuario;
 import Ingenieria.Software.utils.GeneradorPDF;
@@ -85,10 +100,15 @@ public class Controlador {
 	@Autowired
 	ServiceCategoria serviceCategoria;
 	
-	RepositoryProducto repositoryProducto;
+	@Autowired
+	ServiceEstadoProducto serviceEstadoProducto;
 	
 	@Autowired
-    private MailService mailService;
+	ServiceChat serviceChat;
+	
+	RepositoryProducto repositoryProducto;
+	
+
 	
 	@Autowired
 	private EmailSenderService service;
@@ -99,7 +119,7 @@ public class Controlador {
 	@GetMapping(value="/PdfProducto",produces = MediaType.APPLICATION_PDF_VALUE)
 	public ResponseEntity<InputStreamResource> customersReport() throws IOException, MessagingException {
 		
-		 List<Producto> costumers = this.serviceProducto.obtenerTodosProductos();
+
 		 List<Usuario> usuarios = this.serviceUsuario.obtenerTodosUsuarios();
 		 List<Producto> productosCategoria = this.serviceProducto.obtenerTodosProductos();
 		 List<Categoria> Categorias = this.serviceCategoria.obtenerTodasCategoria();
@@ -107,9 +127,6 @@ public class Controlador {
 		 ArrayList<String> arreglo1 = new ArrayList<String>();
 		 ArrayList<Integer> arreglo2 = new ArrayList<Integer>();
 		 String empty_str = "";
-		 Path directorioImagenes=Paths.get("src//main//resources//static/pdf");
-		 String rutaAbsoluta = directorioImagenes.toFile().getAbsolutePath();
-		 Path rutaCompleta = Paths.get(rutaAbsoluta+"//");
 		
 		 /* 
 		 Path directorioImagenes=Paths.get("src//main//resources//static/pdf");
@@ -205,7 +222,12 @@ public class Controlador {
 		return "index";
 	}
 	@GetMapping("/")
-	public String registrarCompani(){
+	public String registrarCompani(@RequestParam (name="page",defaultValue="0")int page,Model model){
+		Pageable userPageable = PageRequest.of(page, 6);
+		  Page<Producto> producto= this.serviceProducto.obtenerTodosProductos(userPageable);
+		  RenderizadorPaginas<Producto> renderizadorPaginas = new RenderizadorPaginas<Producto>("/",producto);
+	      model.addAttribute("page", renderizadorPaginas);
+	      model.addAttribute("producto", producto);
 		return "inicio";
 	}
 	
@@ -251,7 +273,8 @@ public class Controlador {
 			String aux = "*";
 			String aux2 ="usuario";
 			boolean aux3 = true;
-			Usuario usuario= new Usuario(primerNombre,segundoNombre,primerApellido,segundoApellido,correoElectronico,contrasenia,idDepartamento,telefono,direccion,aux2,aux,aux3);
+			int aux4=0;
+			Usuario usuario= new Usuario(primerNombre,segundoNombre,primerApellido,segundoApellido,correoElectronico,contrasenia,idDepartamento,telefono,direccion,aux2,aux,aux3,aux4);
 			this.serviceUsuario.crear(usuario);
 			return "redirect:/encriptar";
 		}catch(Exception e) {
@@ -303,7 +326,6 @@ public class Controlador {
                                   @RequestParam(name = "nombre") String nombre,
                                   @RequestParam(name = "precio") int precio, 
                                   @RequestParam(name = "descripcion") String descripcion,
-                                  @RequestParam(name = "fechaIngreso") @DateTimeFormat(iso = ISO.DATE) LocalDate fechaIngreso ,
                                   @RequestParam(name = "file") MultipartFile fotografias,
                                   @RequestParam(name = "idCategoria") int idCategoria,
                                   @RequestParam(name = "idEstadoProducto") int idEstadoProducto){
@@ -335,9 +357,10 @@ public class Controlador {
     			}
     			
     		}
+    		LocalDate fechaIngreso = LocalDate.now();
             Producto producto= new Producto(nombre,precio,descripcion,fechaIngreso,fotografias.getOriginalFilename(),idCategoria,idUsuario,idEstadoProducto);
             this.serviceProducto.crearProducto(producto);
-            return "redirect:/productos/listarProducto";
+            return "redirect:/pagina/paginaPrincipal";
         }catch(Exception e) {
             return "/";
         }
@@ -355,8 +378,8 @@ public class Controlador {
     public String listarProducto(Model model){
     	
     	
-        List<Producto> productos = this.serviceProducto.obtenerTodosProductos();
-        model.addAttribute("producto", productos);
+        List<Producto> producto = this.serviceProducto.obtenerTodosProductos();
+        model.addAttribute("producto", producto);
         
         return "autenticacion";
     }
@@ -388,7 +411,7 @@ public class Controlador {
 					this.serviceUsuario.crear(e);
 				}
 			}
-			return "redirect:/productos/listarProducto";
+			return "redirect:/pagina/paginaPrincipal";
 		}catch(Exception e) {
 			return "/";
 		}
@@ -415,21 +438,19 @@ public class Controlador {
 	  try {
 			List<Usuario> usuarios=this.serviceUsuario.obtenerTodosUsuarios();
 			for (Usuario e: usuarios) {
-				String str1=e.getListaDeDeseos();
-				String str2= null;
+
 				if(e.getListaDeDeseos().equals("*")) {
 					nP = idProducto ;
 				}else {
 					nP = e.getListaDeDeseos() + ','+ idProducto ;
 				}
-				
-				String s= e.getCorreoElectronico();
+
 				if(e.getCorreoElectronico().equals(userName)) {
 					e.setListaDeDeseos(nP);
 					this.serviceUsuario.crear(e);
 				}
 			}
-			return "redirect:/productos/listarProducto";
+			return "redirect:/pagina/paginaPrincipal";
 		}catch(Exception e) {
 			return"login";
 		}
@@ -463,9 +484,9 @@ public class Controlador {
   
   @GetMapping("/pagina/paginaPrincipal")
   public String clientesPrincipal(@RequestParam (name="page",defaultValue="0")int page, Model model){
-	  Pageable userPageable = PageRequest.of(page, 3);
+	  Pageable userPageable = PageRequest.of(page, 6);
 	  Page<Producto> producto= this.serviceProducto.obtenerTodosProductos(userPageable);
-	  RenderizadorPaginas<Producto> renderizadorPaginas = new RenderizadorPaginas<Producto>("autenticacion",producto);
+	  RenderizadorPaginas<Producto> renderizadorPaginas = new RenderizadorPaginas<Producto>("/pagina/paginaPrincipal",producto);
       model.addAttribute("page", renderizadorPaginas);
       model.addAttribute("producto", producto);
       return "autenticacion";
@@ -550,12 +571,19 @@ public class Controlador {
         }
         return "redirect:/administradores/actualizarUsuarios";
   }
-@GetMapping(value ="/administradores/actualizarUsuarios")
+  
+  @GetMapping(value ="/administradores/actualizarUsuarios")
   public String adminsitrarUsuarios(Model model){
       List<Usuario> usuarios = this.serviceUsuario.obtenerTodosUsuarios();
-      model.addAttribute("usuarios", usuarios);
+      List<Usuario> usuariosDenunciados = new ArrayList<Usuario>();
+      for (Usuario u: usuarios) {
+    	  if(u.getDenuncia() != null) {
+    		  usuariosDenunciados.add(u);
+    	  }
+      }
+      model.addAttribute("usuarios", usuariosDenunciados);
       return "bannearUsuarios";
-  }
+}
 
 
 //CORREO
@@ -563,15 +591,9 @@ public class Controlador {
 public String index(){
     return "send_mail_view";
 }
-/*
-@PostMapping("/sendMail")
-public String sendMail(@RequestParam("name") String name, @RequestParam("mail") String mail, @RequestParam("subject") String subject, @RequestParam("body") String body){
 
-    String message = body +"\n\n Datos de contacto: " + "\nNombre: " + name + "\nE-mail: " + mail;
-    mailService.sendMail("testspringcorrreo@gmail.com", mail, subject, message);
-    
-    return "send_mail_view";
-}*/
+
+
 
 @PostMapping("/sendMail")
 public String triggerMail(Authentication auth,@RequestParam("name") String name, 
@@ -602,7 +624,7 @@ public String triggerMail(Authentication auth,@RequestParam("name") String name,
 public void triggerMail2(String mail) throws MessagingException {
 	
 
-	service.sendEmailWithAttachment("hebermeza0@gmail.com",
+	service.sendEmailWithAttachment(mail,
 			"test",
 			"test",
 			"src//main//resources//static/pdf//10.pdf");
@@ -639,7 +661,7 @@ public static void main(String[] args) throws IOException
 }
 
 //Tareas Autoprogramadas
-
+/*
 @Scheduled(cron = "0 * * ? * *")
 public void scheduleTaskUsingCronExpression() throws MessagingException, IOException {
 	
@@ -676,6 +698,536 @@ public void scheduleTaskUsingCronExpression() throws MessagingException, IOExcep
           ListaVacia.clear();
    }
 }
+*/
+
+// ****************************************RECUPERACION DE CONTRASEÑA********************************************************
+@GetMapping("/usuarios/recuperarCredenciales")
+public String recuperacion1(){
+    return "recuperarCredenciales";
+}
+
+@GetMapping("/usuarios/r")
+public String r(){
+    return "reestablecerContrasenia";
+}
+
+@PostMapping("/usuarios/reinicioContraseña")
+public String reinicioContraseña(@RequestParam("correo") String correo) throws MessagingException {
+	List<Usuario> usuarios=this.serviceUsuario.obtenerTodosUsuarios();
+	for (Usuario e: usuarios) {
+		if(e.getCorreoElectronico().equals(correo)) {
+			int contraseniaAux = generateRandomIntIntRange(1000,3000);
+			e.setContrasenia(String.valueOf(contraseniaAux));
+			this.serviceUsuario.crear(e);
+			service.sendEmailWithAttachment(e.getCorreoElectronico(),
+					String.valueOf(contraseniaAux),
+	                  "Clave para reinicio de Contraseña",
+	                  "src//main//resources//static/images//logo-group.jpg");
+			
+		}
+	}
+	
+	return "codigo";
+
+}
+
+public static int generateRandomIntIntRange(int min, int max) {
+    Random r = new Random();
+    return r.nextInt((max - min) + 1) + min;
+}
+
+@PostMapping("/usuarios/restablecerContraseña")
+public String restablecerContraseña(@RequestParam("clave") String clave){
+	List<Usuario> usuarios=this.serviceUsuario.obtenerTodosUsuarios();
+	for (Usuario e: usuarios) {
+		if(e.getContrasenia().equals(clave)) {
+			e.setContrasenia("*");
+			this.serviceUsuario.crear(e);
+			return "reestablecerContrasenia";
+		}
+	}
+	return "recuperarCredenciales";
+}
+	
+	@PostMapping("/usuarios/nuevaContraseña")
+	public String nuevaContraseña(@RequestParam("contrasenia") String contrasenia) throws MessagingException {
+		List<Usuario> usuarios=this.serviceUsuario.obtenerTodosUsuarios();
+		for (Usuario e: usuarios) {
+			if(e.getContrasenia().equals("*")) {
+				e.setContrasenia(contrasenia);
+				this.serviceUsuario.crear(e);
+				service.sendEmailWithAttachment(e.getCorreoElectronico(),
+			              "Restablecimiento de Contraseña",
+			              "Se restablecio su contraseña exitosamente",
+			              "src//main//resources//static/images//carita-feliz.jpg");
+		}
+		
+		
+		
+		
+
+		}
+		return "redirect:/encriptar";
+	
+	
+	}
+	
+	//Estadisticas
+	@GetMapping("/administradores/estadistica")
+	public String estadistica(Model model,Model model2,Model model3){
+		List<Usuario> usuarios=this.serviceUsuario.obtenerTodosUsuarios();
+		List<Producto> productos=this.serviceProducto.obtenerTodosProductos();
+		List<Categoria> categorias=this.serviceCategoria.obtenerTodasCategoria();
+		
+		
+		List<EstadisticaGeneral> estadisticaGeneral = new ArrayList<EstadisticaGeneral>();
+		List<Estadistica> productosXestado = new ArrayList<Estadistica>();
+		List<Estadistica2> productosXcategoria = new ArrayList<Estadistica2>();
+		
+		EstadisticaGeneral e1=new EstadisticaGeneral();
+		EstadisticaGeneral e2=new EstadisticaGeneral();
+		EstadisticaGeneral e3=new EstadisticaGeneral();
+		e1.setTotalUsuariosN("Usuarios");
+		e1.setCantidadesTotal(usuarios.size());
+		e2.setTotalUsuariosN("Productos");
+		e2.setCantidadesTotal(productos.size());
+		e3.setTotalUsuariosN("Categorias");
+		e3.setCantidadesTotal(categorias.size());
+		
+		estadisticaGeneral.add(e1);
+		estadisticaGeneral.add(e2);
+		estadisticaGeneral.add(e3);
+		
+		
+		
+		
+		
+		
+		int[] contadores = new int[categorias.size()];
+		int estado=0;
+		int estado2=0;
+		int estado3=0;
+		int contadorActual=0;
+		int aux=0;
+		
+		
+		
+		for(Producto p:productos) {
+			if(p.getIdEstadoProducto()==1) {
+				estado+=1;
+			}else if(p.getIdEstadoProducto()==2) {
+				estado2+=1;
+			}else if(p.getIdEstadoProducto()==3) {
+				estado3+=1;
+			}
+		}
+		
+		Estadistica PxE1=new Estadistica();
+		Estadistica PxE2=new Estadistica();
+		Estadistica PxE3=new Estadistica();
+		PxE1.setDescripcion("Nuevo");
+		PxE1.setCantidadEstado(estado);
+		PxE2.setDescripcion("Semi Nuevo");
+		PxE2.setCantidadEstado(estado2);
+		PxE3.setDescripcion("Usuado");
+		PxE3.setCantidadEstado(estado3);
+		
+		productosXestado.add(PxE1);
+		productosXestado.add(PxE2);
+		productosXestado.add(PxE3);
+		
+		
+		
+		
+		for(Categoria c:categorias) {
+			
+			for(Producto p:productos) {
+				
+				if(c.getIdCategoria()== p.getIdCategoria()) {
+				 aux+=1;
+				}
+				
+			}
+			contadores[contadorActual]=aux;
+			aux=0;
+			contadorActual+=1;
+		}
+		int i =0;
+			for(Categoria c:categorias) {
+				
+				Estadistica2 PxC=new Estadistica2();
+				PxC.setCategoria(c.getNombre());
+				PxC.setCantidadCategoria(contadores[i]);
+				productosXcategoria.add(PxC);
+				i+=1;
+				}
+
+		
+		model.addAttribute("estadisticaGeneral", estadisticaGeneral);
+		model.addAttribute("productosXestado", productosXestado);
+		model.addAttribute("productosXcategoria", productosXcategoria);
+		
+		
+		
+		
+		
+		
+	    return "estadisticas.html";
+	    
+	}
+	
+	public String denuncias = "";
+	 
+	 @PostMapping(value ="/usuarios/agregarDenuncia")
+	  public String agregarDenuncia(@RequestParam(name = "denuncia") String denuncia, 
+			  @RequestParam(name = "idUsuario") int idUsuario) {
+		 
+		 try {
+	      List<Usuario> usuario=this.serviceUsuario.obtenerTodosUsuarios();
+	        for (Usuario u: usuario) {
+	            if(u.getIdUsuario() == idUsuario) {
+	            	if(u.getDenuncia() == null) {
+	            		 u.setDenuncia(String.valueOf(denuncia));
+	            	} else {
+	            		denuncias = u.getDenuncia() + ',' + denuncia;
+	            		 u.setDenuncia(String.valueOf(denuncias));
+	            	}
+	            	this.serviceUsuario.crear(u);
+	           
+	            }
+	        }
+	      return "redirect:/pagina/paginaPrincipal";
+		 } catch(Exception e) {
+			 return "/";
+		 }
+
+	  }
+	  
+	 
+	 @GetMapping("/prueba")
+	 public String denuncia(){
+	     return "denuncia";
+	 }
+	 
+	 @GetMapping("/producto")
+	 public String producto(){
+		 return "producto";
+	 }
+	 
+	 @GetMapping("/vendedor")
+	 public String vendedor(){
+		 return "vendedor";
+	 }
+	 
+	 @GetMapping("/detalle/{id}")
+	    public String detalleProducto(Model model, @PathVariable("id") int id) {
+	        try {
+	            Producto producto = this.serviceProducto.buscarProducto(id);
+	            model.addAttribute("producto",producto);
+	            return "/producto";
+	        } catch (Exception e) {
+	            model.addAttribute("error", e.getMessage());
+	            return "error";
+	        }
+	    }
+	 
+	 @GetMapping("/denuncia/{id}")
+	    public String denunciarUsuario(Model model, @PathVariable("id") int id) {
+	        try {
+	        	Usuario usuario = this.serviceUsuario.buscarUsuario(id);
+	            model.addAttribute("usuario",usuario);
+	            return "denuncia";
+	        } catch (Exception e) {
+	            model.addAttribute("error", e.getMessage());
+	            return "error";
+	        }
+	    }
+	 
+	 
+	 /*---------------------------------------Calificacion de Vendedores------------------------------------------*/
+	 
+	 
+	 
+	 @RequestMapping(value="/calificar", method=RequestMethod.POST)
+		public String calificarVendedores(@RequestParam(name = "calificar") int calificacion,
+				@RequestParam(name="idUsuario") int idUsuario){
+		 try {
+		      List<Usuario> usuario=this.serviceUsuario.obtenerTodosUsuarios();
+		      Usuario u1 = new Usuario();
+		        for (Usuario u: usuario) {
+		            if(u.getIdUsuario() == idUsuario) {
+		            	if(u.getCalificacion() == 0) {
+		            		 u.setCalificacion(calificacion);
+		            		 this.serviceUsuario.crear(u);
+		            	} else {
+		            		u.setCalificacion((u.getCalificacion() + calificacion)/(2));
+		            		this.serviceUsuario.crear(u);
+		            	}
+		            	
+		           
+		            }
+		            
+		        }
+		        
+		        
+		      return "redirect:/pagina/paginaPrincipal";
+			 } catch(Exception e) {
+				 return "/";
+			 }
+		}
+	 
+	 @GetMapping(value="/error")
+		public String error(){
+			return "error.html";
+		}
+	 
+	 //ELIMINAR CUALQUIER ANUNCIO POR USUARIO 
+	 @GetMapping(value="/productos/tusProductos")
+		public String productosUsuario(Model model,Authentication auth){
+		 List<Producto> productos=this.serviceProducto.obtenerTodosProductos();
+		 List<Producto> productosXUsuario = new ArrayList<Producto>();
+	      String userName =auth.getName();
+	      List<Usuario> lista = this.serviceUsuario.obtenerTodosUsuarios();
+  			for (Usuario e: lista) {
+  				if(e.getCorreoElectronico().equals(userName)) {
+  					for(Producto p:productos) {
+  						if(p.getIdUsuario()==e.getIdUsuario()) {
+  							productosXUsuario.add(p);
+  						}
+  					}
+  				}
+  		}
+  			
+	      
+	      
+  		model.addAttribute("producto",productosXUsuario);
+		 return "productosUsuario.html";
+	}
+	 
+	 @PostMapping(value ="/productos/eliminarProducto")
+	    public String borrarProductos(@RequestParam(name = "idProducto") int idProducto) {
+		 this.serviceProducto.eliminarProducto(idProducto);
+		
+	         return "redirect:/productos/tusProductos";
+
+	 }
+	 
+	 @GetMapping(value="/usuarios/chat")
+		public String ChatPrincipal(Model model,Model model2){
+		 List<Usuario> usuarios=this.serviceUsuario.obtenerTodosUsuarios();
+		 List<idAux> idReceptorM = new ArrayList<idAux>();
+		 idAux idReceptor = new idAux();
+		 idReceptor.setIdReceptor(0);
+		 idReceptorM.add(idReceptor);
+		 model.addAttribute("usuarios",usuarios);
+		 model2.addAttribute("idReceptorM",idReceptorM);
+		return "chat.html";	
+	}
+	 
+	 
+	 @GetMapping("/chat/{id}")
+	    public String detallesMensajes(Model model,Model model2,Model model3,Model model4, @PathVariable("id") int id,Authentication auth) {
+		 	List<Usuario> usuarios=this.serviceUsuario.obtenerTodosUsuarios();
+		 	List<Chat> chats=this.serviceChat.obtenerTodosLosChats();
+		 	List<msgEmisor> msgsEmisor = new ArrayList<msgEmisor>();
+			msgEmisor msgE = new msgEmisor();
+			List<msgReceptor> msgsReceptor = new ArrayList<msgReceptor>();
+			msgReceptor msgR = new msgReceptor();
+			
+		 	List<idAux> idReceptorM = new ArrayList<idAux>();
+		 	idAux idReceptor = new idAux();
+		 	String userName =auth.getName();
+		 	int idEmisor=0;
+		 	Chat chatAux = new Chat();
+		 	idReceptor.setIdReceptor(id);
+ 			idReceptorM.add(idReceptor);
+		 	for(Usuario u:usuarios) {
+		 		if(u.getCorreoElectronico().equals(userName)) {
+		 			idEmisor=u.getIdUsuario();
+		 		}
+		 	}
+		 	
+	        for(Chat cht:chats) {
+	        	if(cht.getIdUsuarioEmisor()==idEmisor&&cht.getIdUsuarioReceptor()==id) {
+	        		
+	        	}else {
+	        		chatAux.setIdUsuarioEmisor(idEmisor);
+	        		chatAux.setIdUsuarioReceptor(id);
+	        	}
+	        }
+	        for(Chat cht:chats) {
+	        	if(cht.getIdUsuarioEmisor()==idEmisor&&cht.getIdUsuarioReceptor()==id||cht.getIdUsuarioEmisor()==id&&cht.getIdUsuarioReceptor()==idEmisor) {
+	     	        	if(!cht.getMensajeEmisor().equals("%")){
+	     	        		String empty_str = "";
+	     	        		empty_str = cht.getMensajeEmisor();
+	     	                String[] split = empty_str.split(",");
+	     	                for (int i=0; i<split.length; i++) {
+	     	                	msgEmisor msgaux = new msgEmisor();
+	     	                	msgaux.setMsg(split[i]);
+	     	                	msgsEmisor.add(msgaux);
+	     	                }
+	     	        	}else {
+	     	        		
+	     	        	}
+	     	        	if(!cht.getMensajeReceptor().equals("%")){
+	     	        		String empty_str = "";
+	     	        		empty_str = cht.getMensajeReceptor();
+	     	                String[] split = empty_str.split(",");
+	     	                for (int i=0; i<split.length; i++) {
+	     	                	msgReceptor mdgaux = new msgReceptor();
+	     	                	mdgaux.setMsg(split[i]);
+	     	                	msgsReceptor.add(mdgaux);
+	     	                }
+	     	        	}else {
+	     	        		
+	     	        	}
+	     	        	
+	     	        }
+	        	
+	        }
+	       int aux45=0;
+	        for(Chat cht:chats) {
+	        	if(cht.getIdUsuarioEmisor()==idEmisor&&cht.getIdUsuarioReceptor()==id||cht.getIdUsuarioEmisor()==id&&cht.getIdUsuarioReceptor()==idEmisor) {
+	        		aux45=1;
+	        	}
+	        }
+	        
+	        if(aux45==0) {
+	        	Chat chatCrear = new Chat();
+	        	chatCrear.setIdUsuarioEmisor(idEmisor);
+	        	chatCrear.setIdUsuarioReceptor(id);
+	        	chatCrear.setMensajeEmisor("%");
+	        	chatCrear.setMensajeReceptor("%");
+	        	this.serviceChat.crearChat(chatCrear);
+	        }
+	        
+	        if(msgsReceptor.size()<msgsEmisor.size()) {
+	        	msgReceptor mdgaux = new msgReceptor();
+            	mdgaux.setMsg("");
+            	msgsReceptor.add(mdgaux);
+	        }else {
+	        	if(msgsEmisor.size()<msgsReceptor.size()) {
+		        	msgEmisor msgaux = new msgEmisor();
+                	msgaux.setMsg("");
+                	msgsEmisor.add(msgaux);
+		        }
+	        }
+	        
+	        
+	        
+	        model2.addAttribute("usuarios",usuarios);
+	        model.addAttribute("idReceptorM",idReceptorM);
+	        model3.addAttribute("receptorMsg",msgsReceptor);
+	        model4.addAttribute("emisorMsg",msgsEmisor);
+	        for(Chat cht: chats) {
+	        	if(cht.getIdUsuarioEmisor()==idEmisor&&cht.getIdUsuarioReceptor()==id) {
+	        		return "chat2.html";
+	        	}
+	        }
+	        return "chat.html";
+	   }
+	 
+	 @PostMapping(value ="/chat/mensajes")
+	    public String renderizarMensajes(Model model,Model model2,Authentication auth ,
+	    			 					 @RequestParam(name = "idReceptor") int idReceptor,
+	    								 @RequestParam(name = "msg") String msg) {
+		 List<Usuario> usuarios=this.serviceUsuario.obtenerTodosUsuarios();
+		 List<Chat> chats=this.serviceChat.obtenerTodosLosChats();
+		 List<msgEmisor> msgsEmisor = new ArrayList<msgEmisor>();
+		 msgEmisor msgE = new msgEmisor();
+		 List<msgReceptor> msgsReceptor = new ArrayList<msgReceptor>();
+		 String userName =auth.getName();
+		 	int idEmisor=0;
+		 	for(Usuario u:usuarios) {
+		 		if(u.getCorreoElectronico().equals(userName)) {
+		 			idEmisor=u.getIdUsuario();
+		 		}
+		 	}
+		 	
+	        for(Chat cht:chats) {
+	        	if(cht.getIdUsuarioEmisor()==idEmisor&&cht.getIdUsuarioReceptor()==idReceptor) {
+	        			if(cht.getMensajeReceptor().equals("%")) {
+	        				cht.setMensajeReceptor(msg+",");
+		        			this.serviceChat.crearChat(cht);
+	        			}else {
+	        				String aux=cht.getMensajeReceptor();
+	        				cht.setMensajeReceptor(aux+msg+",");
+		        			this.serviceChat.crearChat(cht);
+	        			}
+	        			
+	        		
+	        	}else {
+	        		if(cht.getIdUsuarioEmisor()==idReceptor&&cht.getIdUsuarioReceptor()==idEmisor) {
+	        			if(cht.getMensajeEmisor().equals("%")) {
+	        				cht.setMensajeEmisor(msg+",");
+		        			this.serviceChat.crearChat(cht);
+	        			}else {
+	        				String aux=cht.getMensajeEmisor();
+	        				cht.setMensajeEmisor(aux+msg+",");
+		        			this.serviceChat.crearChat(cht);
+	        			}     			
+	        			
+	        			msgE.setMsg(msg);
+	        			msgsEmisor.add(msgE);
+	        		}
+        			
+        		}
+	        }
+	        
+		
+	         return "redirect:/chat/"+idReceptor;
+
+	 }
+	 
+	 
+	 ///chat/3
+
+
+@GetMapping(value="/productos/ProductosFiltrados")
+public String productosFiltrados(Model model){
+ List<Producto> productos=this.serviceProducto.obtenerTodosProductos();
+	
+		
+ 
+  
+	model.addAttribute("producto",productos);
+ return "productosFiltrados.html";
 }
 
 
+@PostMapping(value ="/productos/ProductosFiltradosCategorias")
+public String productosFiltradosC(Model model,Authentication auth,@RequestParam(name = "nombre") String nombre){
+	
+	 List<Producto> productos=this.serviceProducto.obtenerTodosProductos();
+	 List<Categoria> categorias = this.serviceCategoria.obtenerTodasCategoria();
+	 List<Producto> productosFiltrados = new ArrayList<Producto>();
+
+	         for(Categoria c: categorias) {
+	        	 if(c.getNombre().equals(nombre)) {
+					for(Producto p:productos) {
+						if(p.getIdUsuario()==c.getIdCategoria()) {
+							productosFiltrados.add(p);
+						}
+					}
+	        	 }
+	         }
+	return "redirect:/productos/ProductosFiltrados";
+}
+
+@PostMapping(value ="/productos/ProductosFiltradosCategorias")
+public String productosFiltradosPrecio(Model model,Authentication auth,@RequestParam(name = "precio") int precio){
+	
+	 List<Producto> productos=this.serviceProducto.obtenerTodosProductos();
+	 List<Producto> productosFiltrados = new ArrayList<Producto>();
+
+					for(Producto p:productos) {
+						if(p.getPrecio()<precio) {
+							productosFiltrados.add(p);
+						}
+					}
+	        	 
+	         
+	return "redirect:/productos/ProductosFiltrados";
+}
+
+}

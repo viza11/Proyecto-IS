@@ -29,5 +29,9 @@ public class ServiceUsuario {
 		this.repositoryUsuario.findById(idUsuario);
 		
 	}
+	
+	public Usuario buscarUsuario(int idUsuario) {
+		return this.repositoryUsuario.findById(idUsuario);
+	}
 
 }
